@@ -9,35 +9,33 @@ let fetched = []; // List of prefetched links so it's not done twice
 let timer; // Globally scoped timer variable
 
 // Loop through links array
-links.forEach(x => {
-  // Set href to the href of current link
-  let href = x.getAttribute("href");
+links.forEach(link => {
+  // Set url to the href of current link
+  let url = link.getAttribute("href");
 
   // Add an event listener to all links
-  x.addEventListener("mouseover", () => {
+  link.addEventListener("mouseover", () => {
     timer = performance.now(); // Set timer to right now
     setTimeout(() => {
-      if (timer) {
-        addToHead(href); // Call addToHead() function and pass the currently hovered over link
-      }
+      if (timer) addToHead(url); // Call addToHead() function and pass the currently hovered over link
     }, 250); // 250ms delay before prefetching link
   });
 
   // Add event listener to all mouseouts
-  x.addEventListener("mouseout", () => {
+  link.addEventListener("mouseout", () => {
     // Null the timer when mouse stops hovering
     timer = null;
   });
 });
 
-function addToHead(href) {
-  let prefetched = fetched.find(x => href === x); // See if link has been previously fetched
-  if (!prefetched) {
-    let link = document.createElement("link"); // Create variable to store the link element
-    link.href = href; // Set the link elements href property to passed in link
-    link.rel = "prefetch"; // Tells the browser to prefetch the link
-    link.as = "document";
-    document.head.appendChild(link); // Add link element to <head> of page}
-    fetched.push(href);
+function addToHead(url) {
+  if (!fetched.find(x => url === x)) {
+    // See if link has already been prefetched
+    let linkElement = document.createElement("link"); // Create variable to store the link element
+    linkElement.href = url; // Set the link elements href property to passed in link
+    linkElement.rel = "prefetch"; // Tells the browser to prefetch the link
+    linkElement.as = "document"; // Fetch as a document
+    document.head.appendChild(linkElement); // Add link element to <head> of page}
+    fetched.push(url); // Push the url into our already fetched array
   }
 }
